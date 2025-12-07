@@ -333,12 +333,70 @@ def generar_iniciales_id_capitalizadas(nombres, ids):
         wordlist.add(f"{id_usuario}{iniciales_formato_cm}")
 
     return wordlist
+
+
+def generar_leetspeak_variantes(nombres, palabras_clave):
+    """
+    Genera variantes de Leet Speak (sustitución de caracteres por números/símbolos).
+    Ejemplo: 'juan' -> 'ju4n', 'susi' -> 'su$i', 'camilo' -> 'c@m1l0'
+    """
+    wordlist = set()
+
+    # 1. Definir las sustituciones más comunes
+    sustituciones = {
+        'a': ['4', '@'],
+        'e': ['3'],
+        'i': ['1', '!', '|'],
+        'o': ['0'],
+        's': ['5', '$'],
+        't': ['7', '+'],
+        'l': ['1', '7'],
+    }
+
+    # 2. Combinar todas las palabras base
+    palabras_base = list(set(nombres + palabras_clave))
+
+    for palabra in palabras_base:
+        # Añadir la palabra original (minúscula)
+        wordlist.add(palabra)
+
+        # Generar variantes de una sola sustitución
+        for i, char in enumerate(palabra):
+            if char in sustituciones:
+                for sub in sustituciones[char]:
+                    # Crear una nueva palabra con una sola sustitución
+                    nueva_palabra = list(palabra)
+                    nueva_palabra[i] = sub
+                    wordlist.add("".join(nueva_palabra))
+
+        # Generar variantes con sustituciones múltiples (más agresivo)
+        # Usaremos itertools para generar todas las combinaciones posibles de sustitución
+
+        # Mapear la palabra a las posibles sustituciones por carácter
+        posibles_chars = []
+        for char in palabra:
+            # Incluir el carácter original y sus sustitutos
+            posibilidades = [char]
+            if char in sustituciones:
+                posibilidades.extend(sustituciones[char])
+            posibles_chars.append(posibilidades)
+
+        # Generar el producto cartesiano de todas las posibilidades
+        for combinacion_chars in itertools.product(*posibles_chars):
+            leetspeak_word = "".join(combinacion_chars)
+            # Solo añadir si la variante Leet Speak es diferente de la palabra original
+            if leetspeak_word != palabra:
+                wordlist.add(leetspeak_word)
+
+    return wordlist
+
 def main():
     try:
         nombres, fechas, palabras_clave, simbolos, num_id = obtener_datos()
         datos = nombres + fechas + palabras_clave + simbolos + num_id
         contraseña_palsimfecha = generar_palabra_clave_con_año(palabras_clave, fechas, simbolos)
         contraseñas_ini_id_cap = generar_iniciales_id_capitalizadas(nombres, num_id)
+        contraseñas_leetspeak = generar_leetspeak_variantes(nombres, palabras_clave)
 
     #LLamando las funciones
         combinaciones = generar_combinaciones(datos)
@@ -364,7 +422,8 @@ def main():
             contraseña_2prifin,
             contraseña_nomsimfech,
             contraseña_palsimfecha,
-            contraseñas_ini_id_cap
+            contraseñas_ini_id_cap,
+            contraseñas_leetspeak
                                        )
 
 
