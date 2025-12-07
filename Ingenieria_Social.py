@@ -335,6 +335,54 @@ def generar_iniciales_id_capitalizadas(nombres, ids):
     return wordlist
 
 
+#tomar 2 primeras
+def obtener_iniciales_2primerasconID(nombres):
+    """
+    Toma una lista de nombres y devuelve una cadena con las iniciales de
+    SOLO LOS DOS PRIMEROS NOMBRES, donde la primera es mayúscula y las
+    subsiguientes son minúsculas.
+    Ej: ['claudia', 'maria', 'perez', 'gomez'] -> 'Cm'
+    """
+    if not nombres:
+        return ""
+
+    # *** MODIFICACIÓN CLAVE: Usar slice [0:2] ***
+    # Seleccionamos solo los dos primeros nombres de la lista (índices 0 y 1)
+    primeros_dos_nombres = nombres[:2]
+
+    # Obtener todas las iniciales de los DOS PRIMEROS nombres en minúsculas
+    iniciales_min = ''.join([nombre[0] for nombre in primeros_dos_nombres if nombre])
+
+    if not iniciales_min:
+        return ""
+
+    # Si solo se genera una inicial (ej. 'c'), la regresamos capitalizada.
+    # Si se generan dos (ej. 'cm'), regresamos 'Cm'.
+    if len(iniciales_min) == 1:
+        return iniciales_min[0].upper()
+
+    # Capitalizar la primera letra y dejar la segunda y el resto en minúsculas
+    return iniciales_min[0].upper() + iniciales_min[1:].lower()
+
+def generar_iniciales_2primerasconID(nombres, ids):
+    """
+    """
+    wordlist = set()
+
+    iniciales_formato_cm = obtener_iniciales_2primerasconID(nombres)
+
+    if not iniciales_formato_cm:
+        return wordlist
+
+    for id_usuario in ids:
+        # Formato 1: Iniciales + ID
+        wordlist.add(f"{iniciales_formato_cm}{id_usuario}")
+
+        # Formato 2 (Inverso): ID + Iniciales
+        wordlist.add(f"{id_usuario}{iniciales_formato_cm}")
+
+    return wordlist
+
 def generar_leetspeak_variantes(nombres, palabras_clave):
     """
     Genera variantes de Leet Speak (sustitución de caracteres por números/símbolos).
@@ -397,6 +445,7 @@ def main():
         contraseña_palsimfecha = generar_palabra_clave_con_año(palabras_clave, fechas, simbolos)
         contraseñas_ini_id_cap = generar_iniciales_id_capitalizadas(nombres, num_id)
         contraseñas_leetspeak = generar_leetspeak_variantes(nombres, palabras_clave)
+        contraseñas_ini2conID = generar_iniciales_2primerasconID(nombres, num_id)
 
     #LLamando las funciones
         combinaciones = generar_combinaciones(datos)
@@ -412,7 +461,7 @@ def main():
 
         # Unir ambas listas de contraseñas
         wordlist = combinaciones.union(
-        contraseñas_iniciales,
+            contraseñas_iniciales,
             contraseñas_formato,
             contraseñas_pri_ini,
             contraseñas_ini_primero,
@@ -423,7 +472,8 @@ def main():
             contraseña_nomsimfech,
             contraseña_palsimfecha,
             contraseñas_ini_id_cap,
-            contraseñas_leetspeak
+            contraseñas_leetspeak,
+            contraseñas_ini2conID
                                        )
 
 
